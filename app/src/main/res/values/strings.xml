@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Cameras And Gardens</string>
+    <string name="parse_xml">List Cameras</string>
 </resources>
