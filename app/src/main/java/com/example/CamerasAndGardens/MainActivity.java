@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
                 if (eventType == XmlPullParser.START_TAG) {
                     String elementName = parser.getName(); // name of the current element
 
-                    if (elementName.equals("description")) {
-                        listOfItems.add(new Item(getCameraUrlFromDescription(parser.nextText())));
+                    if (elementName.equals("Data") && isNextElementCameraName(parser)) {
+                        listOfItems.add(new Item(parser.nextText()));
                     }
                 }
                 eventType = parser.next(); // Get next parsing event
@@ -62,6 +62,19 @@ public class MainActivity extends AppCompatActivity {
     static private String getCameraUrlFromDescription(String description){
         description = description.substring(description.indexOf("http:")); // from the beginning of “http:”...
         return description.substring(0, description.indexOf(".jpg") + 4); // ...to the end of “.jpg”
+    }
+
+    static private boolean isNextElementCameraName(XmlPullParser parser) throws IOException, XmlPullParserException {
+        if ((parser.getAttributeCount() == 1) && (parser.getAttributeValue(0).equals("Nombre"))) {
+            int eventType;
+
+            do {
+                eventType = parser.next();
+            } while ((eventType != XmlPullParser.START_TAG) && (eventType != XmlPullParser.END_DOCUMENT));
+            return parser.getName().equals("Value");
+        }
+
+        return false;
     }
 
     public void onBtnCameras(View view) {
