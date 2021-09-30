@@ -82,4 +82,8 @@ public class MainActivity extends AppCompatActivity {
         parseXml();
         myAdapter.notifyDataSetChanged();
     }
+
+    public void onBtnGardens(View view) {
+        Toast.makeText(this, "Button pressed", Toast.LENGTH_SHORT).show();
+    }
 }
