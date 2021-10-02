@@ -5,15 +5,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +64,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void parseJson() {
+        try {
+            InputStream is = getAssets().open("gardens.json");
+            JSONObject root = new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+
+            JSONArray gardenArray = root.getJSONArray("@graph");
+            for (int i = 0; i < gardenArray.length(); i++) {
+                JSONObject gardenNode = gardenArray.getJSONObject(i);
+                listOfItems.add(new Item(gardenNode.getString("title")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     static private String getCameraUrlFromDescription(String description){
         description = description.substring(description.indexOf("http:")); // from the beginning of “http:”...
         return description.substring(0, description.indexOf(".jpg") + 4); // ...to the end of “.jpg”
@@ -84,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onBtnGardens(View view) {
-        Toast.makeText(this, "Button pressed", Toast.LENGTH_SHORT).show();
+        listOfItems.clear();
+        parseJson();
+        myAdapter.notifyDataSetChanged();
     }
 }
