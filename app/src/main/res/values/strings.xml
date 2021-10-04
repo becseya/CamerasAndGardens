@@ -4,4 +4,8 @@
     <string name="list_gardens">List Gardens</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="show_map">Show map</string>
+    <string name="terrain">Terrain</string>
+    <string name="map">Map</string>
+    <string name="hybrid">Hybrid</string>
+    <string name="satellite">Satellite</string>
 </resources>
