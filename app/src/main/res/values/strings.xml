@@ -3,4 +3,5 @@
     <string name="parse_xml">List Cameras</string>
     <string name="list_gardens">List Gardens</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="show_map">Show map</string>
 </resources>

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+import android.content.Intent;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -21,6 +22,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -107,5 +109,9 @@ public class MainActivity extends AppCompatActivity {
         listOfItems.clear();
         parseJson();
         myAdapter.notifyDataSetChanged();
+    }
+
+    public void onBtnShowMap(View view) {
+        startActivity(new Intent(this, MapsActivity.class));
     }
 }
