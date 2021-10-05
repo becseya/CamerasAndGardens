@@ -9,14 +9,17 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.CamerasAndGardens.databinding.ActivityMapsBinding;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener, GoogleMap.OnMapLongClickListener {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+    private Circle myLastCircle = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.setOnMapLongClickListener(this);
+
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -71,5 +76,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onMapLongClick(LatLng coordinates) {
+        if (myLastCircle != null)
+            myLastCircle.remove();
+
+        CircleOptions circleOptions = new CircleOptions()
+                .center(coordinates)    // LatLng point
+                .radius(300 * 1000);    // In meters
+
+        myLastCircle = mMap.addCircle(circleOptions);
     }
 }
