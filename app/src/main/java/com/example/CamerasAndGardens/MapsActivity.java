@@ -3,7 +3,9 @@ package com.example.CamerasAndGardens;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -88,5 +90,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .radius(300 * 1000);    // In meters
 
         myLastCircle = mMap.addCircle(circleOptions);
+    }
+
+    public void onGoToLocation(View v)
+    {
+        Toast.makeText(this, "Btn pressed", Toast.LENGTH_SHORT).show();
     }
 }
