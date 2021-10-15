@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ItemViewHolder.ItemClickListener {
 
     private static final List<Item> listOfItems = new ArrayList<>();
 
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         myRecycleView = findViewById(R.id.recyclerView);
-        myAdapter = new ItemAdapter(listOfItems);
+        myAdapter = new ItemAdapter(listOfItems, this);
         myRecycleView.setAdapter(myAdapter);
         myRecycleView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static private String getCameraUrlFromDescription(String description){
+    static private String getCameraUrlFromDescription(String description) {
         description = description.substring(description.indexOf("http:")); // from the beginning of “http:”...
         return description.substring(0, description.indexOf(".jpg") + 4); // ...to the end of “.jpg”
     }
@@ -121,5 +121,10 @@ public class MainActivity extends AppCompatActivity {
         Intent mapIntent = new Intent(this, MapsActivity.class);
         MapsActivity.appendExtraForMarker(mapIntent, coordinates, title, zoom);
         startActivity(mapIntent);
+    }
+
+    @Override
+    public void onItemClick(int position, View v) {
+        Toast.makeText(this, "id: " + position, Toast.LENGTH_SHORT).show();
     }
 }
