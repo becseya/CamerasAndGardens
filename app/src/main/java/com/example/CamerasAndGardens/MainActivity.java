@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -29,6 +30,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements ItemViewHolder.ItemClickListener {
 
     private static final List<Item> listOfItems = new ArrayList<>();
+    private static final String UNKNOWN_NAME = "Unknown name";
 
     private RecyclerView myRecycleView;
     private ItemAdapter myAdapter;
@@ -52,13 +54,23 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             parser.setInput(is, null);
 
+            String lastKnownName = UNKNOWN_NAME;
+
             int eventType = parser.getEventType(); // current event state of the parser
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     String elementName = parser.getName(); // name of the current element
 
                     if (elementName.equals("Data") && isNextElementCameraName(parser)) {
-                        listOfItems.add(new Item(parser.nextText(), new LatLng(0, 0)));
+                        lastKnownName = parser.nextText();
+                    }
+                    else if (elementName.equals("coordinates")) {
+                        listOfItems.add(new Item(lastKnownName, getLocationFromCordinates(parser.nextText())));
+                    }
+                }
+                else if (eventType == XmlPullParser.END_TAG) {
+                    if (parser.getName().equals("Placemark")) {
+                        lastKnownName = UNKNOWN_NAME;
                     }
                 }
                 eventType = parser.next(); // Get next parsing event
@@ -76,7 +88,18 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
             JSONArray gardenArray = root.getJSONArray("@graph");
             for (int i = 0; i < gardenArray.length(); i++) {
                 JSONObject gardenNode = gardenArray.getJSONObject(i);
-                listOfItems.add(new Item(gardenNode.getString("title"), null));
+
+                LatLng location = null;
+
+                try{
+                    JSONObject locationNode = gardenNode.getJSONObject("location");
+                    location = new LatLng(
+                            locationNode.getDouble("latitude"),
+                            locationNode.getDouble("longitude"));
+                }
+                catch (JSONException ignored) {}
+
+                listOfItems.add(new Item(gardenNode.getString("title"), location));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,6 +109,17 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
     static private String getCameraUrlFromDescription(String description) {
         description = description.substring(description.indexOf("http:")); // from the beginning of “http:”...
         return description.substring(0, description.indexOf(".jpg") + 4); // ...to the end of “.jpg”
+    }
+
+    static private LatLng getLocationFromCordinates(String coordinates) {
+        String[] split = coordinates.split(",");
+        LatLng location = null;
+
+        if (split.length != 3) {
+            return null;
+        }
+
+        return new LatLng(Double.parseDouble(split[1]), Double.parseDouble(split[0]));
     }
 
     static private boolean isNextElementCameraName(XmlPullParser parser) throws IOException, XmlPullParserException {
