@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
                     String elementName = parser.getName(); // name of the current element
 
                     if (elementName.equals("Data") && isNextElementCameraName(parser)) {
-                        listOfItems.add(new Item(parser.nextText()));
+                        listOfItems.add(new Item(parser.nextText(), new LatLng(0, 0)));
                     }
                 }
                 eventType = parser.next(); // Get next parsing event
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
             JSONArray gardenArray = root.getJSONArray("@graph");
             for (int i = 0; i < gardenArray.length(); i++) {
                 JSONObject gardenNode = gardenArray.getJSONObject(i);
-                listOfItems.add(new Item(gardenNode.getString("title")));
+                listOfItems.add(new Item(gardenNode.getString("title"), null));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,6 +125,13 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
 
     @Override
     public void onItemClick(int position, View v) {
-        Toast.makeText(this, "id: " + position, Toast.LENGTH_SHORT).show();
+        Item item = listOfItems.get(position);
+
+        if (item.isLocationValid()) {
+            showLatLonOnMap(item.getLocation(), item.getDisplayText(), true);
+        }
+        else {
+            Toast.makeText(this, "Location is unknown", Toast.LENGTH_SHORT).show();
+        }
     }
 }
