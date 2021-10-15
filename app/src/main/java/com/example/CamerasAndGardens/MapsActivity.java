@@ -29,6 +29,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.CamerasAndGardens.databinding.ActivityMapsBinding;
 
@@ -39,6 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Circle myLastCircle = null;
     private FusedLocationProviderClient locationClient;
     private ActivityResultLauncher<String> requestPermissionLauncher;
+    private Marker lastMarker = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,11 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         mMap.setOnMapLongClickListener(this);
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        placeMarker(new LatLng(-34, 151), "Marker in Sydney");
     }
 
     @Override
@@ -155,5 +153,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void handleLocation(Location loc) {
         Toast.makeText(this, "coordinates: " + loc.getLatitude() + " " + loc.getLongitude(), Toast.LENGTH_SHORT).show();
+    }
+
+    private Marker placeMarker(LatLng coordinates, String title) {
+        Marker newMarker = mMap.addMarker(new MarkerOptions().position(coordinates).title(title));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
+
+        return newMarker;
+    }
+
+    private void updateMarker(LatLng coordinates, String title) {
+        if (lastMarker != null) {
+            lastMarker.remove();
+        }
+
+        lastMarker = placeMarker(coordinates, title);
     }
 }
