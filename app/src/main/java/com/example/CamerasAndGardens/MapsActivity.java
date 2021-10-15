@@ -4,6 +4,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -35,12 +36,24 @@ import com.example.CamerasAndGardens.databinding.ActivityMapsBinding;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener, GoogleMap.OnMapLongClickListener {
 
+    static private final String INTENT_EXTRA_LAT = "LAT";
+    static private final String INTENT_EXTRA_LON = "LON";
+    static private final String INTENT_EXTRA_ZOOM = "ZOOM";
+    static private final String INTENT_EXTRA_TITLE = "TITLE";
+
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     private Circle myLastCircle = null;
     private FusedLocationProviderClient locationClient;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private Marker lastMarker = null;
+
+    public static void appendExtraForMarker(Intent intent, LatLng coordinates, String title, boolean zoom) {
+        intent.putExtra(INTENT_EXTRA_LAT, coordinates.latitude);
+        intent.putExtra(INTENT_EXTRA_LON, coordinates.longitude);
+        intent.putExtra(INTENT_EXTRA_TITLE, title);
+        intent.putExtra(INTENT_EXTRA_ZOOM, zoom);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +97,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         mMap.setOnMapLongClickListener(this);
-        placeMarker(new LatLng(-34, 151), "Marker in Sydney", false);
+
+        Intent intent = getIntent();
+        placeMarker(new LatLng(
+                        intent.getDoubleExtra(INTENT_EXTRA_LAT, 0),
+                        intent.getDoubleExtra(INTENT_EXTRA_LON, 0)
+                ),
+                intent.getStringExtra(INTENT_EXTRA_TITLE),
+                intent.getBooleanExtra(INTENT_EXTRA_ZOOM, false));
     }
 
     @Override

@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Toast;
 import android.content.Intent;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -112,6 +114,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onBtnShowMap(View view) {
-        startActivity(new Intent(this, MapsActivity.class));
+        showLatLonOnMap(new LatLng(-34, 151), "Marker in Sydney", false);
+    }
+
+    public void showLatLonOnMap(LatLng coordinates, String title, boolean zoom) {
+        Intent mapIntent = new Intent(this, MapsActivity.class);
+        MapsActivity.appendExtraForMarker(mapIntent, coordinates, title, zoom);
+        startActivity(mapIntent);
     }
 }
