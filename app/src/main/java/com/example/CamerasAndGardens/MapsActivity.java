@@ -84,7 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         mMap.setOnMapLongClickListener(this);
-        placeMarker(new LatLng(-34, 151), "Marker in Sydney");
+        placeMarker(new LatLng(-34, 151), "Marker in Sydney", false);
     }
 
     @Override
@@ -152,21 +152,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void handleLocation(Location loc) {
-        Toast.makeText(this, "coordinates: " + loc.getLatitude() + " " + loc.getLongitude(), Toast.LENGTH_SHORT).show();
+        updateMarker(new LatLng(loc.getLatitude(), loc.getLongitude()), "CURRENT POSITION", true);
     }
 
-    private Marker placeMarker(LatLng coordinates, String title) {
+    private Marker placeMarker(LatLng coordinates, String title, boolean zoom) {
         Marker newMarker = mMap.addMarker(new MarkerOptions().position(coordinates).title(title));
+
+        if (zoom) {
+            mMap.moveCamera(CameraUpdateFactory.zoomTo(16.0f));
+        }
+
         mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
 
         return newMarker;
     }
 
-    private void updateMarker(LatLng coordinates, String title) {
+    private void updateMarker(LatLng coordinates, String title, boolean zoom) {
         if (lastMarker != null) {
             lastMarker.remove();
         }
 
-        lastMarker = placeMarker(coordinates, title);
+        lastMarker = placeMarker(coordinates, title, zoom);
     }
 }
